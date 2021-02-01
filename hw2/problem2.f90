@@ -14,7 +14,7 @@ program problem2
         read(*,*) carbonRemaining
     enddo
 
-    age = - log(carbonRemaining) / 0.0001216
+    age = -log(carbonRemaining) / 0.0001216
 
     write(*,*) "the age is ", age
 
