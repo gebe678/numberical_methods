@@ -18,6 +18,6 @@ program zork
     ! write the user input to the screen
     write(*,'(A)') userInput
 
-    ! First choice branch
+    ! First choice branch this is a test
 
 end program zork
