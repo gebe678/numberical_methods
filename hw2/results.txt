@@ -1,0 +1,3 @@
+ the sum is    122.199997    
+ the average is    15.2749996    
+ the standard deviation is    6.70623350    
