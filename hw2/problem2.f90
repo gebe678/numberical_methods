@@ -9,7 +9,7 @@ program problem2
 
     read(*,*) carbonRemaining
 
-    do while(carbonRemaining > 1 .OR. carbonRemaining < 0)
+    do while(carbonRemaining .gt. 1 .OR. carbonRemaining .lt. 0)
         write(*,*) "Incorrect Input please enter a number between 0 and 1"
         read(*,*) carbonRemaining
     enddo
