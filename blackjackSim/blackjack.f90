@@ -5,6 +5,40 @@
 !! Feb. 8, 2021
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
+subroutine introPrint()
+
+          !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+      !! PROGRAM START - WELCOME TEXT
+    WRITE(*,*) 'Hello, and welcome to the Blackjack simulator!'
+    WRITE(*,*) ''
+    WRITE(*,*) 'To play this game, a player and a computerized dealer'
+    WRITE(*,*) 'will each be dealt 2 cards from a randomized 52 card'
+    WRITE(*,*) 'deck. The player will then be able to take additional'
+    WRITE(*,*) 'cards from the deck (take hits) to try and get the'
+    WRITE(*,*) 'values of the cards in their hand as close to 21 as'
+    WRITE(*,*) 'possible without going over (going bust). After a'
+    WRITE(*,*) 'player has signaled that they don''t want to hit' 
+    WRITE(*,*) 'again (holding) or go bust, the dealer will then'
+    WRITE(*,*) 'take hits until the values of the cards in their hand'
+    WRITE(*,*) 'are at least 16 or they go bust. After both hands'
+    WRITE(*,*) 'have been dealt, their values are compared.'
+    WRITE(*,*) 'Whomever''s hand is closest to 21 without going bust'    
+    WRITE(*,*) 'wins the hand. Additional hands will be played until'
+    WRITE(*,*) 'the deck runs out of cards to be dealt, at which'
+    WRITE(*,*) 'point the number of hands won are compared and a'
+    WRITE(*,*) 'victor is determined for the game.'
+    WRITE(*,*) ''
+    WRITE(*,*) 'NOTE: FACE CARDS HAVE A VALUE OF 10, ACES CAN BE A 1'
+    WRITE(*,*) 'OR 11, WHICHEVER MAKES THE BEST HAND WITHOUT BUSTING.'
+    WRITE(*,*) ''
+
+    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    !! GAME START
+    WRITE(*,*) '* - G A M E - S T A R T - *'
+    WRITE(*,*) '==========================='
+
+end subroutine introPrint
+
 subroutine shuffleDeck(deck, cardValue)
 
     Integer, dimension(52) :: deck
@@ -201,6 +235,8 @@ program blackjack
     Integer :: playerWins = 0
 
     Integer :: i
+
+    call introPrint()
     
     call shuffleDeck(deck, cardValue)
 
