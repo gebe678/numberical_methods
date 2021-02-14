@@ -235,6 +235,7 @@ program blackjack
 
         dealerHandScore = 0
         playerHandScore = 0
+        write(*,*)
     enddo
 
     ! do i=1, 52
