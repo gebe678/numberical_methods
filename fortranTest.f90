@@ -1,7 +1,8 @@
-subroutine test1(x)
-
+subroutine test1(y)
+    integer :: y
     integer :: x
-    x = 20
+    x = x + 5
+    y = y + 10
 end subroutine test1
 
 program test
@@ -9,7 +10,7 @@ program test
     integer :: dude1 = 0
 
     call test1(dude)
-    call test1(dude1)
+    call test1(dude)
 
     write(*,*) dude, dude1
 end program test
