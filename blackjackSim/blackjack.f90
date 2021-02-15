@@ -220,6 +220,7 @@ subroutine playerTurn(deck, cardValue, cardTotal, cardsInDeck)
 
     enddo
     userInput = 0;
+
 end subroutine playerTurn
 
 program blackjack
@@ -256,7 +257,9 @@ program blackjack
         else if(dealerHandScore .gt. 21) then
             write(*,*) "The player wins this round"
             playerWins = playerWins + 1
-
+        else if(dealerHandScore .gt. 21 .AND. playerHandScore .gt. 21)
+            write(*,*) "You have both busted better luck next time"
+            
         else if(dealerHandScore .gt. playerHandScore) then
             write(*,*) "The dealer wins this round"
             dealerwins = dealerWins + 1
