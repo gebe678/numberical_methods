@@ -52,7 +52,7 @@ program diffSolver
         x = x + h
 
         ! increment the diffEquation value with the new x and y values
-        diffEquation = -2 * y + x ** 3 * exp(2 * x)
+        diffEquation = -2 * y + x ** 3 * exp(2 * (-x))
 
         ! print the diffEquation to the user
         write(*,*) "the equation is ", diffEquation
