@@ -5,6 +5,12 @@
 program beamDeflection
     implicit none
 
+    ! formatting statements to make the output look good
+    ! use the parameter value to replace the formatting statment with a value
+    ! this is not a variable as the name becomes a memonomic for the value
+    character(len=*), parameter :: format1 = "(A8, 1X, I3, 2X, A15, F5.2)"
+    
+
     ! i is a variable used for interating in do loops
     ! Needed because of the useage of implicit none
     integer :: i
@@ -118,7 +124,9 @@ program beamDeflection
         endif
 
         ! Print the beam number and length to the screen for the report
-        write(*,*) "Beam No.", i, "Total Length", length
+        write(*,*)
+        write(*,format1) "Beam No.", i, "Total Length =", length
+        write(*,*)
 
         ! Find the number of intervals from one foot of the beam to the end of the beam length
         ! this is just the floor of the beam length because we start one foot from the load end of the beam
@@ -128,7 +136,7 @@ program beamDeflection
         numIntervals = floor(length)
 
         ! print the header for the output
-        write(*,*) "Distance of Load From Fixed End", "deflection"
+        write(*,*) "Distance of Load From Fixed End ", " deflection"
         ! calculate deflection for every foot from the beam
         do j=1, numIntervals
             
