@@ -5,6 +5,61 @@
 ! used following source to allocate an array size dynamically: 
 ! https://www.tutorialspoint.com/fortran/fortran_dynamic_arrays.htm
 
+! Subroutine to evaluate a polynomial stored in an array at a specific value
+subroutine evaluatePolynomial(polynomialLength, polynomial, x, answer)
+
+    implicit none
+
+    ! length of the polynomial this is user supplied input
+    Integer :: polynomialLength
+
+    ! an array containing polynomial data
+    ! data stored as (coefficient, exponent) values
+    real, dimension(polynomialLength * 2) :: polynomial
+
+    ! variable that the function will be evaluated at
+    real :: x
+
+    ! the result of evaluating the polynomial at the x value
+    real :: answer
+
+    ! iterator for the do loop (needed due to implicit none)
+    integer :: i
+
+    ! iterator for the polynomial step needed to to the coefficient, exponent data stored
+    integer :: polyIterator = 1
+
+    ! array to hold the values for each term in the polynomial they then will be added together and
+    ! saved in the answer variable
+    real, dimension(polynomialLength) :: termCalculations
+
+    ! will go through the polynomial term by term and calculate coefficient * x ^ exponent
+    do i=1, polynomialLength
+
+        ! get the coefficient from the polynomial array
+        termCalculations(i) = polynomial(polyIterator)
+
+        ! increment the polynomial index
+        polyIterator = polyIterator + 1
+
+        ! multiply the coefficient by x ^ exponent data
+        termCalculations(i) = termCalculations(i) * (x ** polynomial(polyIterator))
+        polyIterator = polyIterator + 1
+
+    enddo
+
+    ! will loop through all of the terms in the polynomial and add them together
+    do i=1, polynomialLength
+
+        answer = answer + termCalculations(i)
+
+    enddo
+
+    ! reset the polyIterator for the next polynomial to be evaluated
+    polyIterator = 1
+
+end subroutine evaluatePolynomial
+
 program rootFinder
 
     implicit none
@@ -38,8 +93,12 @@ program rootFinder
     ! variable to hold the acceptable tolerance of the acual value
     real :: tolerance
 
-    ! variable used in the polynomial equation
-    real :: x
+    ! variable that holds the value of the polynomial calcuated at x
+    real :: answer
+
+    ! variables that store the value of the polynomial at the beginning (A), end (B), and midpoint
+    ! (or c if the false position method is used) to find the roots of the funciton
+    real :: answerA, answerB, answerC
 
     ! Prompt the user for the length of the polynomial
     write(*,*) "How many terms would you like the polynomial to have?"
@@ -52,6 +111,17 @@ program rootFinder
     ! Prompt the user for the upper bound of the searched area
     write(*,*) "Enter the upper bound of the range to search"
     read(*,*) upperBound
+
+    ! check to make sure the lower bound is less than the upper bound
+    ! prompt the user to enter an upper bound of the correct size if
+    ! the above check is false
+    do while(upperBound .le. lowerBound)
+
+        write(*,*) "The upperbound can not be smaller than the lower bound."
+        write(*,*) "Please enter an upper bound greater than", lowerBound
+        read(*,*) upperBound
+
+    enddo
 
     ! prompt the user for the tolerance of error
     write(*,*) "Please enter the tolerance of the acual value"
@@ -93,7 +163,14 @@ program rootFinder
     ! bisection method selected
     if(method .eq. 1) then
 
-        
+        ! evaluate the given polynomail at the lower bound and save the answer into
+        ! answerA
+        call evaluatePolynomial(numberOfElements, polynomial, lowerbound, answerA)
+        write(*,*) answerA
+
+        ! evaluate the given polynomial at the upper bound and save the answer into
+        ! answerB
+        call evaluatePolynomial(numberOfElements, polynomial, upperBound, answerB)
 
     ! false position method selectec
     else if(method .eq. 2) then
