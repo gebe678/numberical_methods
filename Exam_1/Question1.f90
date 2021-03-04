@@ -9,6 +9,8 @@ program beamDeflection
     ! use the parameter value to replace the formatting statment with a value
     ! this is not a variable as the name becomes a memonomic for the value
     character(len=*), parameter :: format1 = "(A8, 1X, I3, 2X, A15, F5.2)"
+    character(len=*), parameter :: format2 = "(A31, 5X, A11)"
+    character(len=*), parameter :: format3 = "(15X, I2, 20X, F10.2)"
     
 
     ! i is a variable used for interating in do loops
@@ -136,7 +138,7 @@ program beamDeflection
         numIntervals = floor(length)
 
         ! print the header for the output
-        write(*,*) "Distance of Load From Fixed End ", " deflection"
+        write(*,format2) "Distance of Load From Fixed End ", " deflection"
         ! calculate deflection for every foot from the beam
         do j=1, numIntervals
             
@@ -145,7 +147,7 @@ program beamDeflection
 
             ! calculate the deflection for the beam
             deflection = (appliedLoad * ((j ** 2)) / (2 * elasticity * intertia)) * (length - (j / 3))
-            write(*,*) j, deflection
+            write(*,format3) j, deflection
 
         enddo
 
