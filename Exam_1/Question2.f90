@@ -89,6 +89,21 @@ program rootFinder
         read(*,*) method
     enddo
 
+    ! if then statement to determine which method the user slected to find the root
+    ! bisection method selected
+    if(method .eq. 1) then
+
+        
+
+    ! false position method selectec
+    else if(method .eq. 2) then
+
+    ! Error code statment should be impossible to trigger as method should not be able to be anything other than 1 or 2
+    else
+        write(*,*) "ERROR invalid root finding method selected terminating program"
+
+    endif
+
     ! deallocate the memory for the dynamic array
     ! this will free up memory for future use
     deallocate(polynomial)
