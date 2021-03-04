@@ -112,7 +112,7 @@ program rootFinder
     real :: answerA, answerB, answerC
 
     ! variable containing the number of steps (loops) to find the root within the tolerance range
-    Integer :: steps = 0
+    Integer :: steps = 1
 
     ! Prompt the user for the length of the polynomial
     write(*,*) "How many terms would you like the polynomial to have?"
@@ -203,73 +203,84 @@ program rootFinder
     ! if statement will determine if a root exists in the given range
     if(answerA * answerB .lt. 0) then
         write(*,*) "A root has been dectected"
+        
+        write(*,*) "Tolerance is", tolerance
+        write(*,*) "Error is:", error
+        write(*,*)
 
-        ! if then statement to determine which method the user slected to find the root
-        ! bisection method selected
-        if(method .eq. 1) then
-            write(*,*) "Tolerance is", tolerance
-            write(*,*) "Error is:", error
-            write(*,*)
-
-            ! keep searching for the root until the approximations are less than the tolerance
-            
-            do while(error .ge. tolerance)
+        ! keep searching for the root until the error is greater than the tolerance
+        do while(error .ge. tolerance)
+            ! if then statement to determine which method the user slected to find the root
+            ! bisection method selected
+            if(method .eq. 1) then
                 ! find the midpoint of the bound
                 midpoint = (lowerBound + upperBound) / 2
 
-                ! evaluate the polynomial at the midpoint
-                ! reset the answer before calling the polynomial
-                answerC = 0
-                call evaluatePolynomial(numberOfElements, polynomial, midpoint, answerC)
-                write(*,*) answerC, "function evalutated at the midpoint", midpoint
-
-                if(answerC .eq. 0) then
-
-                    write(*,*) "Root found at point", midpoint
-                    stop
-
-                endif
-
-                ! calculate the error
-                ! if the error is within the tolerance than stop the loop
-
-                ! calculate the error on the second iteration
-                ! if calculated before than there is no last approximation value
-                if(steps .ge. 1) then
-                    error = abs((midpoint - lastApproxValue) / midpoint)
-                    write(*,*) "the current approx is", midpoint
-                    write(*,*) "the last approx is", lastApproxValue
-                    write(*,*) "The error is", error
-                endif
-
-                ! update the last approx value with the most recent approximation
-                lastApproxValue = midpoint
-
-                ! the root is is between the lower bound and the midpoint
-                ! reset the upper bound to the midpoint and recalculate the root
-                if(answerA * answerC .lt. 0) then
-                    upperBound = midpoint
+            ! false position method selected
+            else if(method .eq. 2) then
+                !calculate the point to check based on the formula
                 
-                ! the root is between the upper bound and the midpoint
-                ! reset the lower bound to the midpoint
-                else if(answerB * answerC .lt. 0) then
-                    lowerBound = midpoint
-                endif
+                !reset answerA and answerB to 0
+                answerA = 0
+                answerB = 0
 
-                write(*,*) "the new interval is from", lowerBound, upperBound
-                steps = steps + 1
-            enddo
+                !recalculate answerA and answerB with the updated bounds
+                call evaluatePolynomial(numberOfElements, polynomial, lowerBound, answerA)
+                call evaluatePolynomial(numberOfElements, polynomial, upperBound, answerB)
 
-            write(*,*) "The root is at point", midpoint, "and was found in", steps, "steps"
+                ! calculate the midpoint based on the updated bounds
+                midpoint = ((lowerBound * answerB) - (upperBound * answerA)) / (answerB - answerA)
 
-        ! false position method selected
-        else if(method .eq. 2) then
+            ! Error code statment should be impossible to trigger as method should not be able to be anything other than 1 or 2
+            else
+                write(*,*) "ERROR invalid root finding method selected terminating program"
+                STOP
+            endif
 
-        ! Error code statment should be impossible to trigger as method should not be able to be anything other than 1 or 2
-        else
-            write(*,*) "ERROR invalid root finding method selected terminating program"
-            STOP
-        endif
+            ! evaluate the polynomial at the midpoint
+            ! reset the answer before calling the polynomial
+            answerC = 0
+            call evaluatePolynomial(numberOfElements, polynomial, midpoint, answerC)
+            write(*,*) answerC, "function evalutated at the midpoint", midpoint
+
+            if(answerC .eq. 0) then
+
+                write(*,*) "Root found at point", midpoint, "with", steps, "steps"
+                stop
+
+            endif
+
+            ! calculate the error
+            ! if the error is within the tolerance than stop the loop
+
+            ! calculate the error on the second iteration
+            ! if calculated before than there is no last approximation value
+            if(steps .ge. 2) then
+                error = abs((midpoint - lastApproxValue) / midpoint)
+                write(*,*) "the current approx is", midpoint
+                write(*,*) "the last approx is", lastApproxValue
+                write(*,*) "The error is", error
+            endif
+
+            ! update the last approx value with the most recent approximation
+            lastApproxValue = midpoint
+
+            ! the root is is between the lower bound and the midpoint
+            ! reset the upper bound to the midpoint and recalculate the root
+            if(answerA * answerC .lt. 0) then
+                upperBound = midpoint
+                
+            ! the root is between the upper bound and the midpoint
+            ! reset the lower bound to the midpoint
+            else if(answerB * answerC .lt. 0) then
+                lowerBound = midpoint
+            endif
+
+            write(*,*) "the new interval is from", lowerBound, upperBound
+            steps = steps + 1
+        enddo
+
+        write(*,*) "The root is at point", midpoint, "and was found in", steps, "steps"
 
     ! No root exists in the given range
     else
