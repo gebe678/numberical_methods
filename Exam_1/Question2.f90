@@ -86,15 +86,26 @@ program rootFinder
     ! even indicies hold the exponent value
     real, dimension(:), allocatable  :: polynomial
 
-    ! variables to hold the range of the polynomial being searched
+    ! variables to hold the range of the polynomial being searched and the midpoint (or c value if false position method is used)
     real :: lowerBound
     real :: upperBound
+    real :: midpoint
 
     ! variable to hold the acceptable tolerance of the acual value
     real :: tolerance
 
     ! variable that holds the value of the polynomial calcuated at x
     real :: answer
+
+    ! variable that will hold the last approximated value for the root
+    ! this value will start at 0 so the tolerance must be less than 1
+    ! or the method will only approximate the value once
+    ! used to calculate the error
+    real :: lastApproxValue = 0
+
+    ! variable to hold the current error value
+    ! initialized to 0 so the user must select a tolerance greater than 0 and less than 1
+    real :: error = 0
 
     ! variables that store the value of the polynomial at the beginning (A), end (B), and midpoint
     ! (or c if the false position method is used) to find the roots of the funciton
@@ -124,8 +135,14 @@ program rootFinder
     enddo
 
     ! prompt the user for the tolerance of error
-    write(*,*) "Please enter the tolerance of the acual value"
+    write(*,*) "Please enter the tolerance of the acual value must select a value less than 1 and greater than 0"
     read(*,*) tolerance
+    write(*,*) tolerance
+
+    do while(tolerance .ge. 1 .OR. tolerance .le. 0)
+        write(*,*) "Invalid tolerance. Tolerance selection must be less than 1 and greater than 0"
+        read(*,*) tolerance
+    enddo
 
     ! allocate the number of elements to the dynamic array
     ! one spot in the array will save the coefficient the next will save the power of the variable
@@ -159,25 +176,68 @@ program rootFinder
         read(*,*) method
     enddo
 
-    ! if then statement to determine which method the user slected to find the root
-    ! bisection method selected
-    if(method .eq. 1) then
+    ! evaluate the given polynomail at the lower bound and save the answer into
+    ! answerA
+    call evaluatePolynomial(numberOfElements, polynomial, lowerbound, answerA)
+    write(*,*) answerA, "function evaluated at the lower bound"
 
-        ! evaluate the given polynomail at the lower bound and save the answer into
-        ! answerA
-        call evaluatePolynomial(numberOfElements, polynomial, lowerbound, answerA)
-        write(*,*) answerA
+    ! evaluate the given polynomial at the upper bound and save the answer into
+    ! answerB
+    call evaluatePolynomial(numberOfElements, polynomial, upperBound, answerB)
+    write(*,*) answerB, "function evaluated at the upper bound"
 
-        ! evaluate the given polynomial at the upper bound and save the answer into
-        ! answerB
-        call evaluatePolynomial(numberOfElements, polynomial, upperBound, answerB)
+    ! if statement will determine if a root exists in the given range
+    if(answerA * answerB .lt. 0) then
+        write(*,*) "A root has been dectected"
 
-    ! false position method selectec
-    else if(method .eq. 2) then
+        ! if then statement to determine which method the user slected to find the root
+        ! bisection method selected
+        if(method .eq. 1) then
+            write(*,*) tolerance
+            write(*,*) error
 
-    ! Error code statment should be impossible to trigger as method should not be able to be anything other than 1 or 2
+            ! keep searching for the root until the approximations are less than the tolerance
+            do while(error .le. tolerance)
+                ! find the midpoint of the bound
+                midpoint = (lowerBound + upperBound) / 2
+
+                ! evaluate the polynomial at the midpoint
+                call evaluatePolynomial(numberOfElements, polynomial, midpoint, answerC)
+                write(*,*) answerC, "function evalutated at the midpoint"
+
+                ! calculate the error
+                ! if the error is within the tolerance than stop the loop
+                error = abs((answerC - lastApproxValue) / answerC)
+                write(*,*) "The error is", error
+
+                ! update the last approx value with the most recent approximation
+                lastApproxValue = answerC
+
+                ! the root is is between the lower bound and the midpoint
+                ! reset the upper bound to the midpoint and recalculate the root
+                if(answerA * answerC .lt. 0) then
+                    upperBound = midpoint
+                
+                ! the root is between the upper bound and the midpoint
+                ! reset the lower bound to the midpoint
+                else if(answerB * answerC .lt. 0) then
+                    lowerBound = midpoint
+                endif
+            enddo
+
+        ! false position method selected
+        else if(method .eq. 2) then
+
+        ! Error code statment should be impossible to trigger as method should not be able to be anything other than 1 or 2
+        else
+            write(*,*) "ERROR invalid root finding method selected terminating program"
+
+        endif
+
+    ! No root exists in the given range
     else
-        write(*,*) "ERROR invalid root finding method selected terminating program"
+        write(*,*) "There is an even number of roots or no roots in the given range"
+        write(*,*) "Unable to detect the roots (if they exist)"
 
     endif
 
