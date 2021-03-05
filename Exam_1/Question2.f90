@@ -309,7 +309,7 @@ program rootFinder
                 if(abs(answerA) .lt. tolerance)  then      
                      stopper = 0
                 else if(abs(answerB) .lt. tolerance) then
-                    stopper = 0cld
+                    stopper = 0
                  endif
             endif
 
@@ -329,6 +329,10 @@ program rootFinder
         write(*,*) "The root is at point", midpoint, "and was found in", steps, "steps"
         write(*,*) "the error is", error, "the stopper is", stopper
 
+        ! write suggested next interval to search to the user
+        write(*,*) "one possible root found to find more roots enter a new interval"
+        write(*,*) "suggested endpoint for an interval is", midpoint + tolerance, "and", midpoint - tolerance
+
     ! if the root was found at f(b) or f(a) print that out to the user
     else if(answerA .eq. 0) then
         write(*,*) "root found at", lowerBound
@@ -344,4 +348,5 @@ program rootFinder
     ! deallocate the memory for the dynamic array
     ! this will free up memory for future use
     deallocate(polynomial)
+
 end program rootFinder

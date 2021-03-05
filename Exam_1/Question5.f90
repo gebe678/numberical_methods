@@ -75,18 +75,22 @@ program marbleInBox
         ! get a random number for the distance of the marble from the width of the box
         call random_number(marbleWidthDist)
 
+        ! get the integer part of the random number
         call random_number(randomInteger)
 
+        ! make the interger part of the number a value between 0-12
         randomInteger = floor((randomInteger * 12))
 
+        ! combine the interger and decimal parts of the number and save it to the marbleWidthDist
         marbleWidthDist = marbleWidthDist + randomInteger
 
+        ! add the values to the total for the width and length
         placementAvg100Length = placementAvg100Length + marbleLengthDist
         placementAvg100Width = placementAvg100Width + marbleWidthDist
 
     enddo
 
-        ! loop to find the average of 10000 random placements
+    ! loop to find the average of 10000 random placements
     do i=1, 10000
 
         ! Get a random number for the distance of the marble from the length of the box
@@ -114,23 +118,29 @@ program marbleInBox
         ! get a random number for the distance of the marble from the width of the box
         call random_number(marbleWidthDist)
 
+        ! get a random integer value for the integer portion of the number
         call random_number(randomInteger)
 
+        ! scale the interger portion of the number to be between 0 - 12
         randomInteger = floor((randomInteger * 12))
 
+        ! combine the decimal and integer portions of the number
         marbleWidthDist = marbleWidthDist + randomInteger
 
+        ! save the calculated length and width values and add them to the total
         placementAvg10000Length = placementAvg10000Length + marbleLengthDist
         placementAvg10000Width = placementAvg10000Width + marbleWidthDist
 
     enddo
 
+    ! find the average of the length and width for the 100 and 10000 simulations
     placementAvg100Length = placementAvg100Length / 100
     placementAvg100Width = placementAvg100Width / 100
     placementAvg10000Length = placementAvg10000Length / 10000
     placementAvg10000Width = placementAvg10000Width / 10000
 
 
+    ! print the results of the simulations to the user
     write(*,*) "100 simulations: width:", placementAvg100Width, "length:", placementAvg100Length
     write(*,*) "10000 simulations: width:", placementAvg10000Width, "length:", placementAvg10000Length
 
