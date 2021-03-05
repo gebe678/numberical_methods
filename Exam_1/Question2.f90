@@ -115,13 +115,14 @@ program rootFinder
     Integer :: steps = 1
 
     ! variable to check a halting condition for the false position method
-    character :: stopper = "t"
+    Integer :: stopper = 1
 
     ! Prompt the user for the length of the polynomial
     write(*,*) "How many terms would you like the polynomial to have?"
     write(*,*) "Please enter a whole number greater than 1"
     read(*,*) numberOfElements
 
+    ! if the there are no elements in the polynomail ask the user for new input
     do while(numberOfElements .le. 0)
         write(*,*) "Invalid input enter a whole number greater than 0"
         read(*,*) numberOfElements
@@ -160,6 +161,7 @@ program rootFinder
     ! one spot in the array will save the coefficient the next will save the power of the variable
     allocate (polynomial(numberOfElements * 2))
 
+    ! get the elements of the polynomial from the user
     do i=1, numberOfElements
 
         ! prompt the user for the coefficient of the polynomial
@@ -174,15 +176,16 @@ program rootFinder
 
     enddo
 
+    ! print out all of the polynomial elements
     do i=1, numberOfELements * 2
         write(*,*) polynomial(i)
     enddo
 
     ! prompt the user to use the bisection method vs the false position method
-
     write(*,*) "press 1 to use the bisection method and 2 to use the false position method"
     read(*,*) method
 
+    ! if the user selects incorrect method types
     do while(method .ne. 1 .AND. method .ne. 2) 
         write(*,*) "invalid selection plase press 1 to use the bisection method and 2 to use the false position method"
         read(*,*) method
@@ -207,22 +210,24 @@ program rootFinder
     if(answerA * answerB .lt. 0) then
         write(*,*) "A root has been dectected"
         
+        ! print out the tolerance and the error to the user
         write(*,*) "Tolerance is", tolerance
         write(*,*) "Error is:", error
         write(*,*)
 
         ! keep searching for the root until the error is greater than the tolerance
-        do while(error .ge. tolerance .and. stopper .eq. "t")
+        do while(error .ge. tolerance .or. stopper .eq. 1)
             ! if then statement to determine which method the user slected to find the root
             ! bisection method selected
             if(method .eq. 1) then
                 ! find the midpoint of the bound
                 midpoint = (lowerBound + upperBound) / 2
+                stopper = 0
 
             ! false position method selected
             else if(method .eq. 2) then
                 ! set the stopping condition to false
-                !stopper = "f"
+                stopper = 1
                 !calculate the point to check based on the formula
                 ! calculate the midpoint based on the updated bounds
                 midpoint = ((lowerBound * answerB) - (upperBound * answerA)) / (answerB - answerA)
@@ -239,6 +244,7 @@ program rootFinder
             call evaluatePolynomial(numberOfElements, polynomial, midpoint, answerC)
             write(*,*) "f(c)", answerC, "function evalutated at the midpoint", midpoint
 
+            ! if there is a root at the c value than print out the root value
             if(answerC .eq. 0) then
 
                 write(*,*) "Root found at point", midpoint, "with", steps, "steps"
@@ -250,58 +256,80 @@ program rootFinder
             ! reset the upper bound to the midpoint and recalculate the root
             if(answerA * answerC .lt. 0) then
 
+                ! calculate the error if the false position method was selected
                 if(method .eq. 2) then
                     error = upperBound - midpoint
 
-                    ! if(answerA .eq. tolerance .or. answerB .eq. tolerance) then
-                    !     stopper = "t"
-                    ! endif
-
+                ! calculate the error if the bisection method was selected
                 else if(method .eq. 1) then
                     error = upperbound - lowerBound
                 endif
 
+                ! reset the upperbound to the midpoint
                 upperBound = midpoint
+
+                ! reset f(b) to the f(c) value (c is the midpoint)
                 answerB = answerC
 
+                ! print out the interval to the user
                 write(*,*) "the new interval is from", lowerBound, upperBound
+
+                ! increment the steps taken to find the root
                 steps = steps + 1
                 
             ! the root is between the upper bound and the midpoint
             ! reset the lower bound to the midpoint
             else if(answerB * answerC .lt. 0) then
 
+                ! calculate the error if the false position method was chosen
                 if(method .eq. 2) then
                     error = midpoint - lowerBound
 
-                    ! if(answerA .eq. tolerance .or. answerB .eq. tolerance) then
-                    !     stopper = "t"
-                    ! endif
-
+                ! calculate the error if the bisection method was chosen
                 else if(method .eq. 1) then
                     error = upperbound - lowerBound
                 endif
 
+                ! update the lowerbound value to the midpoint
                 lowerBound = midpoint
+
+                ! update the f(a) value to the f(c) value (c is the midpoint)
                 answerA = answerC
 
+                ! print out the interval to the user
                 write(*,*) "the new interval is from", lowerBound, upperBound
                 steps = steps + 1
 
             endif
 
+            ! if the false position method was chosen than this additional condition must also be true
+            ! found this method at: https://ece.uwaterloo.ca/~dwharder/NumericalAnalysis/10RootFinding/falseposition/ 
+            ! condidition is that f(a) or f(b) must be less than the tolerance for the false position method to stop
+            if(method .eq. 2) then
+                if(abs(answerA) .lt. tolerance)  then      
+                     stopper = 0
+                else if(abs(answerB) .lt. tolerance) then
+                    stopper = 0cld
+                 endif
+            endif
+
+            ! print out useful information to the user
             write(*,*) "lower bound", lowerBound
             write(*,*) "upper bound", upperBound
             write(*,*) "answerA", answerA
             write(*,*) "answerB", answerB
             write(*,*) "midpoint", midpoint
             write(*,*) "answerC", answerC
-            write(*,*) "error is", error
+            write(*,*) "error is", error, tolerance
+            write(*,*) "stopper is", stopper
             write(*,*)
         enddo
 
+        ! print out the root and the midpoint if found
         write(*,*) "The root is at point", midpoint, "and was found in", steps, "steps"
+        write(*,*) "the error is", error, "the stopper is", stopper
 
+    ! if the root was found at f(b) or f(a) print that out to the user
     else if(answerA .eq. 0) then
         write(*,*) "root found at", lowerBound
     else if(answerB .eq. 0) then
