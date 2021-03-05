@@ -224,10 +224,10 @@ program rootFinder
 
                 write(*,*) "lowerbound:" ,lowerBound
                 write(*,*) "upperbound:" ,upperbound
-                write(*,*) "midpoint:" ,midpoint
                 write(*,*) "answera:" ,answerA
                 write(*,*) "answerb:" ,answerb
                 midpoint = ((upperBound - lowerBound) * answerA) / (answerB - answerA)
+                write(*,*) "midpoint:" ,midpoint
 
             ! Error code statment should be impossible to trigger as method should not be able to be anything other than 1 or 2
             else
@@ -253,11 +253,16 @@ program rootFinder
 
             ! calculate the error on the second iteration
             ! if calculated before than there is no last approximation value
-            if(steps .ge. 2) then
-                error = abs((midpoint - lastApproxValue) / midpoint)
-                write(*,*) "the current approx is", midpoint
-                write(*,*) "the last approx is", lastApproxValue
-                write(*,*) "The error is", error
+            error = abs((midpoint - lastApproxValue) / midpoint)
+            write(*,*) "the current approx is", midpoint
+            write(*,*) "the last approx is", lastApproxValue
+            write(*,*) "The error is", error
+
+            if(error .eq. 1) then
+                if(answerC .gt. 0 .and. answerC .lt. 1) then
+                    write(*,*) "Root found at point", midpoint, "with", steps, "steps"
+                    stop
+                endif
             endif
 
             ! update the last approx value with the most recent approximation
