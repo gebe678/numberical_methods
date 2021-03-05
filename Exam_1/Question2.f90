@@ -219,17 +219,15 @@ program rootFinder
             ! false position method selected
             else if(method .eq. 2) then
                 !calculate the point to check based on the formula
-                
-                !reset answerA and answerB to 0
-                answerA = 0
-                answerB = 0
-
-                !recalculate answerA and answerB with the updated bounds
-                call evaluatePolynomial(numberOfElements, polynomial, lowerBound, answerA)
-                call evaluatePolynomial(numberOfElements, polynomial, upperBound, answerB)
 
                 ! calculate the midpoint based on the updated bounds
-                midpoint = ((lowerBound * answerB) - (upperBound * answerA)) / (answerB - answerA)
+
+                write(*,*) "lowerbound:" ,lowerBound
+                write(*,*) "upperbound:" ,upperbound
+                write(*,*) "midpoint:" ,midpoint
+                write(*,*) "answera:" ,answerA
+                write(*,*) "answerb:" ,answerb
+                midpoint = ((upperBound - lowerBound) * answerA) / (answerB - answerA)
 
             ! Error code statment should be impossible to trigger as method should not be able to be anything other than 1 or 2
             else
@@ -269,19 +267,37 @@ program rootFinder
             ! reset the upper bound to the midpoint and recalculate the root
             if(answerA * answerC .lt. 0) then
                 upperBound = midpoint
+
+                if(method .eq. 2) then
+                    answerB = 0
+                    call evaluatePolynomial(numberOfElements, polynomial, midpoint, answerB)
+                endif
+
+                write(*,*) "the new interval is from", lowerBound, upperBound
+                steps = steps + 1
                 
             ! the root is between the upper bound and the midpoint
             ! reset the lower bound to the midpoint
             else if(answerB * answerC .lt. 0) then
                 lowerBound = midpoint
-            endif
 
-            write(*,*) "the new interval is from", lowerBound, upperBound
-            steps = steps + 1
+                if(method .eq. 2) then
+                    answerA = 0
+                    call evaluatePolynomial(numberOfElements, polynomial, midpoint, answerA)
+                endif
+
+                write(*,*) "the new interval is from", lowerBound, upperBound
+                steps = steps + 1
+
+            endif
         enddo
 
         write(*,*) "The root is at point", midpoint, "and was found in", steps, "steps"
 
+    else if(answerA .eq. 0) then
+        write(*,*) "root found at", lowerBound
+    else if(answerB .eq. 0) then
+        write(*,*) "root found at", upperBound
     ! No root exists in the given range
     else
         write(*,*) "There is an even number of roots or no roots in the given range"
