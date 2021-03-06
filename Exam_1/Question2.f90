@@ -60,12 +60,12 @@ subroutine evaluatePolynomial(polynomialLength, polynomial, x, answer)
 
 end subroutine evaluatePolynomial
 
-program rootFinder
+ program rootFinder
 
-    implicit none
+   implicit none
 
     ! interator variable used in do loops due to implicit none
-    integer :: i
+    integer :: i, j
 
     ! number value to choose if the user wants to use the bisection method or the false position method
     integer :: method
@@ -117,10 +117,27 @@ program rootFinder
     ! variable to check a halting condition for the false position method
     Integer :: stopper = 1
 
+    ! array of length 100 to hold all roots found
+    ! program assumes that the user will not have a function with more than 100 roots
+    real, dimension(100) :: allRoots
+
+    ! variable to hold the number of roots found
+    Integer :: numRoots = 1
+
+    j = 1
+    ! continue searching for roots until the user desides otherwise
+    do while(j .eq. 1)
     ! Prompt the user for the length of the polynomial
     write(*,*) "How many terms would you like the polynomial to have?"
     write(*,*) "Please enter a whole number greater than 1"
     read(*,*) numberOfElements
+
+    ! reset variables for every iteration of the bisection / false position method
+    steps = 1
+    stopper = 1
+    error = 1
+    lastApproxValue = 0
+    polynomialIndex = 1
 
     ! if the there are no elements in the polynomail ask the user for new input
     do while(numberOfElements .le. 0)
@@ -248,8 +265,9 @@ program rootFinder
             if(answerC .eq. 0) then
 
                 write(*,*) "Root found at point", midpoint, "with", steps, "steps"
-                stop
-
+                allRoots(numRoots) = midpoint
+                numRoots = numRoots + 1
+                exit
             endif
 
             ! the root is is between the lower bound and the midpoint
@@ -323,11 +341,19 @@ program rootFinder
             write(*,*) "error is", error, tolerance
             write(*,*) "stopper is", stopper
             write(*,*)
+
+            if(steps .gt. 300) then
+                write(*,*) "unable to find polynomial after", steps, "iterations closest approximation found is", midpoint
+                exit
+            endif
         enddo
 
         ! print out the root and the midpoint if found
         write(*,*) "The root is at point", midpoint, "and was found in", steps, "steps"
         write(*,*) "the error is", error, "the stopper is", stopper
+
+        allRoots(numRoots) = midpoint
+        numRoots = numRoots + 1
 
         ! write suggested next interval to search to the user
         write(*,*) "one possible root found to find more roots enter a new interval"
@@ -336,8 +362,14 @@ program rootFinder
     ! if the root was found at f(b) or f(a) print that out to the user
     else if(answerA .eq. 0) then
         write(*,*) "root found at", lowerBound
+        allRoots(numRoots) = midpoint
+        numRoots = numRoots + 1
+
     else if(answerB .eq. 0) then
         write(*,*) "root found at", upperBound
+        allRoots(numRoots) = midpoint
+        numRoots = numRoots + 1
+
     ! No root exists in the given range
     else
         write(*,*) "There is an even number of roots or no roots in the given range"
@@ -348,5 +380,20 @@ program rootFinder
     ! deallocate the memory for the dynamic array
     ! this will free up memory for future use
     deallocate(polynomial)
+
+    write(*,*) "more roots may exist would you like to seach for another bound?"
+    write(*,*) "press 1 too seach another bound and anything else to exit"
+    read(*,*) j
+
+    enddo
+
+    ! check ot make sure that roots were found
+    ! loop through all roots and print them for the user
+    if(numRoots .gt. 1) then
+        write(*,*) "list of found roots:"
+        do i=1, numRoots - 1
+            write(*,*) allRoots(i)
+        enddo
+    endif
 
 end program rootFinder
