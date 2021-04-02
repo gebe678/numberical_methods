@@ -34,8 +34,8 @@ program planetOrbit
 
     ! open a file to write the x, y points to
     open(1, file = "values.dat")
-    open(2, file="xvlaues")
-    open(3, file="yvalues")
+    open(2, file="xvalues.dat")
+    open(3, file="yvalues.dat")
 
     write(*,*) "pi ", pi
     
