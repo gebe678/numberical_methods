@@ -59,7 +59,7 @@ end subroutine evaluatePolynomial
 
 
 ! subroutine for finding the roots using Newtons Method
-subroutine newtonsMethod(roots, polynomial)
+subroutine newtonsMethod(roots, polynomial, derivativePolynomial)
 
     ! variable to hold a root of the equation
     real, dimension(2) :: roots
@@ -67,11 +67,15 @@ subroutine newtonsMethod(roots, polynomial)
     ! array to hold the polynomial coefficient / power
     real, dimension(6) :: polynomial
 
+    ! array to hold the derivative of the polynomial coefficient / power
+    real, dimension(4) :: derivativePolynomial
+
     ! variable to hold the current x value
     real :: x
 
     ! variable to hold the evaluation of the polynomaial at x
-    real :: answer = 0
+    real :: polynomialAnswer = 0
+    real :: derivativeAnswer = 0
 
     ! f(x) =  x^6 - x - 1
     ! f'(x) = 6x^5 - 1
@@ -80,23 +84,51 @@ subroutine newtonsMethod(roots, polynomial)
     roots(1) = -10
     roots(2) = -10
 
+    ! get x0 from the user within the range given in the problem
     write(*,*) "Please enter a beginning start value for x within the range -2, 2"
     read(*,*) x
 
+    ! make sure that x0 given by the user is within the correct range
     do while(x .lt. -2 .or. x .gt. 2)
         write(*,*) "X value ouside the given range -2, 2 please enter an x value within the range -2, 2"
         read(*,*) x
     enddo
 
-    do i=1, 6
+    ! loop that uses newtons method
+    do i=1, 10
 
-        
+        ! evaluate f(x)
+        call evaluatePolynomial(3, polynomial, x, answer)
+
+        ! evaluate f'(x)
+        call evaluatePolynomial(2, derivativePolynomial, x, derivativeAnswer)
+
+        write(*,*)
+        write(*,*) "n", i
+        write(*,*) "f(x)", answer
+        write(*,*)
+        write(*,*) "f'(x)", derivativeAnswer
+
+        ! find the new x using newtons method formula
+        x = x - (answer / derivativeAnswer)
+        write(*,*) "x:", x
+        write(*,*)
+
+        ! reset the answers for each loop
+        answer = 0
+        derivativeAnswer = 0
 
     enddo
 
-    call evaluatePolynomial(3, polynomial, x, answer)
+    roots(1) = x
 
-    write(*,*) "Polynomial evaluated at", x, "is", answer
+    ! call evaluatePolynomial(3, polynomial, x, answer)
+
+    ! write(*,*) "Polynomial evaluated at", x, "is", answer
+
+    ! reset all values
+    polynomialAnswer = 0
+    derivativeAnswer = 0
 
 end subroutine newtonsMethod
 
@@ -124,6 +156,8 @@ program newton_secant_roots
     ! polynomial array coefficient / exponent
     real, dimension(6) :: polynomial
 
+    real, dimension(4) :: derivativePolynomial
+
     ! initialize the polynomial
     polynomial(1) = 1.0
     polynomial(2) = 6.0
@@ -131,6 +165,12 @@ program newton_secant_roots
     polynomial(4) = 1.0
     polynomial(5) = -1.0
     polynomial(6) = 0.0
+
+    ! initialize the derivative of the polynomial
+    derivativePolynomial(1) = 6
+    derivativePolynomial(2) = 5
+    derivativePolynomial(3) = -1
+    derivativePolynomial(4) = 0
 
     ! get user data to choose newton or secant method
     write(*,*) "Program to find the roots of the equation x^6 - x - 1"
@@ -149,7 +189,7 @@ program newton_secant_roots
     ! user has selected Newtons Method
     if(method .eq. 1) then
 
-        call newtonsMethod(roots, polynomial)
+        call newtonsMethod(roots, polynomial, derivativePolynomial)
 
         do i=1, 2
 
