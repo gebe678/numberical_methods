@@ -61,6 +61,8 @@ end subroutine evaluatePolynomial
 ! subroutine for finding the roots using Newtons Method
 subroutine newtonsMethod(roots, polynomial, derivativePolynomial, roots_actual)
 
+    implicit none
+
     ! variable to hold a root of the equation
     real, dimension(2) :: roots
 
@@ -76,6 +78,9 @@ subroutine newtonsMethod(roots, polynomial, derivativePolynomial, roots_actual)
     ! variable to hold the current x value
     real :: x
 
+    ! looping variable (needed due to implicit none)
+    integer :: i
+
     ! variable to hold the evaluation of the polynomaial at x
     real :: polynomialAnswer = 0
     real :: derivativeAnswer = 0
@@ -87,20 +92,13 @@ subroutine newtonsMethod(roots, polynomial, derivativePolynomial, roots_actual)
     roots(1) = -10
     roots(2) = -10
 
-    ! get x0 from the user within the range given in the problem
-    write(*,*) "Please enter a beginning start value for x within the range -2, 2"
-    read(*,*) x
-
-    ! make sure that x0 given by the user is within the correct range
-    do while(x .lt. -2 .or. x .gt. 2)
-        write(*,*) "X value ouside the given range -2, 2 please enter an x value within the range -2, 2"
-        read(*,*) x
-    enddo
+    ! first x0 value will be -2
+    x = -2
 
     ! loop that uses newtons method to find the first root from the input provided by the user
     ! end the loop if the tolerance is less than or equal to 10^-6
     ! calculate the tolerance using absolute error
-    do while( ABS( roots_actual(1) - x ) .ge. (10.0 ** (-6.0)) .OR. ABS( roots_actual(1) - x ) .ge. (10.0 ** (-6.0)) )
+    do while( ABS( roots_actual(1) - x ) .ge. (10.0 ** (-6.0)) .AND. ABS( roots_actual(1) - x ) .ge. (10.0 ** (-6.0)) )
 
         ! evaluate f(x)
         call evaluatePolynomial(3, polynomial, x, polynomialAnswer)
@@ -151,7 +149,7 @@ subroutine newtonsMethod(roots, polynomial, derivativePolynomial, roots_actual)
     ! loop that uses newtons method to find the first root from the input provided by the user
     ! end the loop if the tolerance is less than or equal to 10^-6
     ! calculate the tolerance using absolute error
-    do while( ABS( roots_actual(1) - x ) .ge. (10.0 ** (-6.0)) .OR. ABS( roots_actual(1) - x ) .ge. (10.0 ** (-6.0)) )
+    do while( ABS( roots_actual(1) - x ) .ge. (10.0 ** (-6.0)) .AND. ABS( roots_actual(1) - x ) .ge. (10.0 ** (-6.0)) )
 
         ! evaluate f(x)
         call evaluatePolynomial(3, polynomial, x, polynomialAnswer)
@@ -200,9 +198,132 @@ subroutine newtonsMethod(roots, polynomial, derivativePolynomial, roots_actual)
 end subroutine newtonsMethod
 
 ! subroutine for finding the roots using the secant method
-subroutine secantMethod()
+subroutine secantMethod(roots, polynomial, roots_actual)
 
-    write(*,*) "secant method"
+    implicit none
+
+    ! variable to hold a root of the equation
+    real, dimension(2) :: roots
+
+    ! array to hold the polynomial coefficient / power
+    real, dimension(6) :: polynomial
+
+    ! array to hold the acutual roots of the polynomial (found on mathway.com)
+    real, dimension(2) :: roots_actual
+
+    ! variable to hold the current x value (first guess) and y value (second guess) and z(temporary variable to hold values as they change)
+    real :: x, y, z
+
+    ! looping variable needed due to implicit none
+    integer :: i
+
+    ! variables to hold the evaluations of the polynomials at x and y
+    real :: xAnswer = 0
+    real :: yAnswer = 0
+
+    ! initialize both roots to -10 (outside given range)
+    roots(1) = -10
+    roots(2) = -10
+
+    ! first guesses
+    x = -2
+    y = -1.5
+
+    ! loop that uses secant to find the first root from the input provided by the user
+    ! end the loop if the tolerance is less than or equal to 10^-6
+    ! calculate the tolerance using absolute error
+    do while( ABS( roots_actual(1) - x ) .ge. (10.0 ** (-6.0)) .AND. ABS( roots_actual(2) - x ) .ge. (10.0 ** (-6.0)) )
+
+        ! hold the value of x so when x changes to the next value y changes to the current x value
+        z = x
+
+        ! evaluate the polynomial at the x and y values
+        call evaluatePolynomial(3, polynomial, x, xAnswer)
+        call evaluatePolynomial(3, polynomial, y, yAnswer)
+
+        ! calculate the new x value using the secant formula
+        x = x - xAnswer * ( (x - y) / (xAnswer - yAnswer) )
+
+        ! print out calculations
+        write(*,*)
+        write(*,*) "n", i
+        write(*,*) "f(x)", xAnswer
+        write(*,*)
+        write(*,*) "f(y):", yAnswer
+        write(*,*)
+        write(*,*) "x:", x
+        write(*,*)
+        write(*,*) "y:", y
+        write(*,*)
+        write(*,*) "testing the abs error value", roots_actual(1) - x, roots_actual(2) - x
+        write(*,*)
+        write(*,*) "printing the tolerance", 10.0 ** (-6.0)
+
+        ! leave the loop if the polynomial is evaluated to 0
+        if(xAnswer .eq. 0) then
+
+            exit
+
+        endif
+
+        
+        ! reset the polynomial evalutions for the next loop
+        xAnswer = 0
+        yAnswer = 0
+        i = i + 1
+    enddo
+
+    roots(1) = x
+
+    ! reset x and y to look for the other root using new guesses
+    x = 1.5
+    y = 2
+
+    ! loop that uses secant to find the first root from the input provided by the user
+    ! end the loop if the tolerance is less than or equal to 10^-6
+    ! calculate the tolerance using absolute error
+    do while( ABS( roots_actual(1) - x ) .ge. (10.0 ** (-6.0)) .AND. ABS( roots_actual(2) - x ) .ge. (10.0 ** (-6.0)) )
+
+        ! hold the value of x so when x changes to the next value y changes to the current x value
+        z = x
+
+        ! evaluate the polynomial at the x and y values
+        call evaluatePolynomial(3, polynomial, x, xAnswer)
+        call evaluatePolynomial(3, polynomial, y, yAnswer)
+
+        ! calculate the new x value using the secant formula
+        x = x - xAnswer * ( (x - y) / (xAnswer - yAnswer) )
+
+        ! print out calculations
+        write(*,*)
+        write(*,*) "n", i
+        write(*,*) "f(x)", xAnswer
+        write(*,*)
+        write(*,*) "f(y):", yAnswer
+        write(*,*)
+        write(*,*) "x:", x
+        write(*,*)
+        write(*,*) "y:", y
+        write(*,*)
+        write(*,*) "testing the abs error value", roots_actual(1) - x, roots_actual(2) - x
+        write(*,*)
+        write(*,*) "printing the tolerance", 10.0 ** (-6.0)
+
+        ! leave the loop if the polynomial is evaluated to 0
+        if(xAnswer .eq. 0) then
+
+            exit
+
+        endif
+
+        
+        ! reset the polynomial evalutions for the next loop
+        xAnswer = 0
+        yAnswer = 0
+        i = i + 1
+    enddo
+
+    roots(2) = x
 
 end subroutine secantMethod
 
@@ -272,10 +393,22 @@ program newton_secant_roots
 
         enddo
 
+        write(*,*)
+        write(*,*) "Used newtons method"
+
     ! user has selected the Secant Method
     else if(method .eq. 2) then
 
-        call secantMethod
+        call secantMethod(roots, polynomial, roots_actual)
+
+        do i=1, 2
+
+            write(*,*) "roots are", roots(i)
+
+        enddo
+
+        write(*,*)
+        write(*,*) "Used Secant Method"
 
     endif
 
