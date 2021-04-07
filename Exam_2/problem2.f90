@@ -59,7 +59,7 @@ end subroutine evaluatePolynomial
 
 
 ! subroutine for finding the roots using Newtons Method
-subroutine newtonsMethod(roots, polynomial, derivativePolynomial)
+subroutine newtonsMethod(roots, polynomial, derivativePolynomial, roots_actual)
 
     ! variable to hold a root of the equation
     real, dimension(2) :: roots
@@ -69,6 +69,9 @@ subroutine newtonsMethod(roots, polynomial, derivativePolynomial)
 
     ! array to hold the derivative of the polynomial coefficient / power
     real, dimension(4) :: derivativePolynomial
+
+    ! array to hold the acutual roots of the polynomial (found on mathway.com)
+    real, dimension(2) :: roots_actual
 
     ! variable to hold the current x value
     real :: x
@@ -94,33 +97,97 @@ subroutine newtonsMethod(roots, polynomial, derivativePolynomial)
         read(*,*) x
     enddo
 
-    ! loop that uses newtons method
-    do i=1, 10
+    ! loop that uses newtons method to find the first root from the input provided by the user
+    ! end the loop if the tolerance is less than or equal to 10^-6
+    ! calculate the tolerance using absolute error
+    do while( ABS( roots_actual(1) - x ) .ge. (10.0 ** (-6.0)) .OR. ABS( roots_actual(1) - x ) .ge. (10.0 ** (-6.0)) )
 
         ! evaluate f(x)
-        call evaluatePolynomial(3, polynomial, x, answer)
+        call evaluatePolynomial(3, polynomial, x, polynomialAnswer)
 
         ! evaluate f'(x)
         call evaluatePolynomial(2, derivativePolynomial, x, derivativeAnswer)
 
         write(*,*)
         write(*,*) "n", i
-        write(*,*) "f(x)", answer
+        write(*,*) "f(x)", polynomialAnswer
         write(*,*)
         write(*,*) "f'(x)", derivativeAnswer
 
         ! find the new x using newtons method formula
-        x = x - (answer / derivativeAnswer)
+        x = x - (polynomialAnswer / derivativeAnswer)
         write(*,*) "x:", x
         write(*,*)
+        write(*,*) "testing the abs error value", roots_actual(1) - x, roots_actual(2) - x
+        write(*,*)
+        write(*,*) "printing the tolerance", 10.0 ** (-6.0)
+
+        ! leave the loop if the polynomial is evaluated to 0
+        if(polynomialAnswer .eq. 0) then
+
+            exit
+
+        endif
 
         ! reset the answers for each loop
-        answer = 0
+        polynomialAnswer = 0
         derivativeAnswer = 0
+        i = i + 1
 
     enddo
 
+    ! get the first root value for the equation
     roots(1) = x
+
+    ! depending on the first root value set the second root value
+    if(roots(1) .lt. 0) then
+        x = 2
+
+    else if(roots(1) .gt. 0) then
+        x = -2
+
+    endif
+
+    ! loop that uses newtons method to find the first root from the input provided by the user
+    ! end the loop if the tolerance is less than or equal to 10^-6
+    ! calculate the tolerance using absolute error
+    do while( ABS( roots_actual(1) - x ) .ge. (10.0 ** (-6.0)) .OR. ABS( roots_actual(1) - x ) .ge. (10.0 ** (-6.0)) )
+
+        ! evaluate f(x)
+        call evaluatePolynomial(3, polynomial, x, polynomialAnswer)
+
+        ! evaluate f'(x)
+        call evaluatePolynomial(2, derivativePolynomial, x, derivativeAnswer)
+
+        write(*,*)
+        write(*,*) "n", i
+        write(*,*) "f(x)", polynomialAnswer
+        write(*,*)
+        write(*,*) "f'(x)", derivativeAnswer
+
+        ! find the new x using newtons method formula
+        x = x - (polynomialAnswer / derivativeAnswer)
+        write(*,*) "x:", x
+        write(*,*)
+        write(*,*) "testing the abs error value", roots_actual(1) - x, roots_actual(2) - x
+        write(*,*)
+        write(*,*) "printing the tolerance", 10.0 ** (-6.0)
+
+        ! leave the loop if the polynomial is evaluated to 0
+        if(polynomialAnswer .eq. 0) then
+
+            exit
+
+        endif
+
+        ! reset the answers for each loop
+        polynomialAnswer = 0
+        derivativeAnswer = 0
+        i = i + 1
+
+    enddo
+
+    roots(2) = x
 
     ! call evaluatePolynomial(3, polynomial, x, answer)
 
@@ -156,7 +223,11 @@ program newton_secant_roots
     ! polynomial array coefficient / exponent
     real, dimension(6) :: polynomial
 
+    ! derivative of the polynomial array coefficient / exponent
     real, dimension(4) :: derivativePolynomial
+
+    ! actual roots of the equation given (found on mathway.com)
+    real, dimension(2) :: roots_actual
 
     ! initialize the polynomial
     polynomial(1) = 1.0
@@ -171,6 +242,10 @@ program newton_secant_roots
     derivativePolynomial(2) = 5
     derivativePolynomial(3) = -1
     derivativePolynomial(4) = 0
+
+    ! initialize the roots of the polynomial (found on mathway.com)
+    roots_actual(1) = -.77808959
+    roots_actual(2) = 1.13472413
 
     ! get user data to choose newton or secant method
     write(*,*) "Program to find the roots of the equation x^6 - x - 1"
@@ -189,7 +264,7 @@ program newton_secant_roots
     ! user has selected Newtons Method
     if(method .eq. 1) then
 
-        call newtonsMethod(roots, polynomial, derivativePolynomial)
+        call newtonsMethod(roots, polynomial, derivativePolynomial, roots_actual)
 
         do i=1, 2
 
