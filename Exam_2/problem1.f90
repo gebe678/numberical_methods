@@ -5,8 +5,8 @@ program bacteria_force_curve_fitting
 
     implicit none
 
-    ! FIXME DELETE OR RENAME VARIABLE TO HOLD FILE DATA
-    real :: data
+    ! variables to hold the displacement and force data
+    real, dimension(281) :: displacementData, forceData
 
     ! formatting statment to display all of the digits in the number read from the DisplacementData and ForceData
     character(len=20), PARAMETER :: displacementFormat = "(F20.12)"
@@ -16,19 +16,31 @@ program bacteria_force_curve_fitting
     integer :: displacement = 1
     integer :: force = 2
 
+    ! variable for interating through loops
+    ! needed due to implicit none
+    integer :: i
+
     ! open the file containing the force curve data
     open(displacement, file="DisplacementData.dat")
     open(force, file="ForceData.dat")
 
-    ! read the data from the file
-    read(displacement, *)data
+    ! There are 281 data points in the files
+    ! loop can go 281 times to get all of the data points
+    ! save the data points into an array
 
-    write(*, displacementFormat)data
+    do i=1, 281
 
-    
-    read(force, *) data
-    write(*,forceFormat)data
+        read(displacement, *) displacementData(i)
+        read(force, *) forceData(i)
 
+        write(*,*)
+        write(*,*) "n:", i
+        write(*,*)
+        write(*,*) "displacement data", displacementData(i)
+        write(*,*)
+        write(*,*) "force data", forceData(i)
+        write(*,*)
 
+    enddo
 
 end program bacteria_force_curve_fitting
