@@ -22,14 +22,14 @@ program bacteria_force_curve_fitting
     ! variable for interating through loops
     ! needed due to implicit none
     ! counter used to keep the number of points that have been foudn
-    integer :: i, counter
+    integer :: i, count
 
     ! tolerance for the slopes to differ before stoping the interpolation
     real :: tolerance = .03
 
     ! allocatable arrays to hold the points found to be analyzed
     ! with least squares fit
-    real, dimension(:), allocatable :: dimensionPoints
+    real, dimension(:), allocatable :: displacementPoints
     real, dimension(:), allocatable :: forcePoints
 
     ! open the file containing the force curve data
@@ -65,8 +65,10 @@ program bacteria_force_curve_fitting
     ! start at the end of the list and count down torwards the beginning
     do i=280, 2, -1
 
+        ! calculate sequential slopes
         slope2 = (forceData(i) - forceData(i - 1)) / (displacementData(i) - displacementData(i - 1))
 
+        ! print data
         write(*,*) "n:", i
         write(*,*)
         write(*,*) "x2:", displacementData(i)
@@ -87,20 +89,45 @@ program bacteria_force_curve_fitting
         write(*,*) "slope difference", ABS(slope1 - slope2)
         write(*, forceFormat) ABS(slope1 - slope2)
 
+        ! check the current slope with the origional slope to check
+        ! if they are within the linear tolerance
+        ! if they arent than stop the loop
         if(  ABS(slope1 - slope2) .gt. tolerance) then
 
             write(*,*) "STOPPING"
             write(*,*)
+            count = count + 1
+
             exit
 
         endif
 
+        ! count the new point
         count = count + 1
         
     enddo
 
-    count + 1
+    write(*,*) count
 
-    
+    ! allocate the count of the points and add one for the extra point at the end
+    allocate(displacementPoints(count))
+    allocate(forcePoints(count))
+
+    ! get the linear data from the files
+    ! count backwards to make sure the data is in the correct order
+    do i=count, 1, -1
+
+        ! get the linear displacement points and the lienear force points
+        displacementPoints(i) = displacementData(282 - i)
+        forcePoints(i) = forceData(282 - i)
+
+        ! write the points to the user
+        write(*,*)
+        write(*,*) "displacement", displacementPoints(i)
+        write(*,*)
+        write(*,*) "force", forcePoints(i)
+        write(*,*)
+        
+    enddo
 
 end program bacteria_force_curve_fitting
