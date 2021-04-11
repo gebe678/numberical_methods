@@ -97,6 +97,12 @@ program planetOrbit
     ! Neptune
     planetEccentricity(7) = .009
 
+    write(*,*)
+    write(*,*) "Program to simulate a planets orbit around the sun"
+    write(*,*) "Output is x and y values of where the planet will be"
+    write(*,*) "each point is where the planet will be when by incrementing 1/20th of earth rotation"
+    write(*,*)
+
     write(*,*) "Please enter a planet to simulate"
 
     write(*,*) "Enter 1 - 7 for Venus through Neptune"
@@ -109,6 +115,43 @@ program planetOrbit
 
     enddo
 
+    if(planet .eq. 1) then
+        write(*,*)
+        write(*,*) "Simulating Venus"
+        write(*,*)
+
+    else if(planet .eq. 2) then
+        write(*,*)
+        write(*,*) "Simulating Earth"
+        write(*,*)
+        
+    else if(planet .eq. 3) then
+        write(*,*)
+        write(*,*) "Simulating Mars"
+        write(*,*)
+        
+    else if(planet .eq. 4) then
+        write(*,*)
+        write(*,*) "Simulating Jupiter"
+        write(*,*)
+        
+    else if(planet .eq. 5) then
+        write(*,*)
+        write(*,*) "Simulating Saturn"
+        write(*,*)
+        
+    else if(planet .eq. 6) then
+        write(*,*)
+        write(*,*) "Simulating Uranus"
+        write(*,*)
+        
+    else if(planet .eq. 7) then
+        write(*,*)
+        write(*,*) "Simulating Neptune"
+        write(*,*)
+
+    endif
+        
     ! find the perod of the planet
     period = planetDistanceFromSun(planet) ** 3
     period = sqrt(period)
@@ -140,12 +183,22 @@ program planetOrbit
             x = (a * cos(theta))
             y = (b * sin(theta))
 
+            write(*,*) "x:", x
+            write(*,*)
+            write(*,*) "y:", y
+            write(*,*)
+
         else
 
             ! find the x and y values of the planet based on the current angle
             ! and the radius of the planet from the sun
             x = planetDistanceFromSun(planet) * cos(theta)
             y = planetDistanceFromSun(planet) * sin(theta)
+
+            write(*,*) "x:", x
+            write(*,*)
+            write(*,*) "y:", y
+            write(*,*)
 
         endif
 
@@ -155,15 +208,21 @@ program planetOrbit
 
         theta = theta + (((1.0 / 20.0) * 2.0 * pi) / period)
         
+        write(*,*)
         write(*,*) "theta", theta
+        write(*,*)
 
-        ! write the x and y value to the vlaues.dat file
+        ! write the x and y value to the values.dat file
         write(1, *) "x:", x, "y:", y
         write(2, *) x
         write(3, *) y
 
     enddo
     
+    write(*,*) "X values are located in xvalues.dat"
+    write(*,*)
+    write(*,*) "Y values are located in yvalues.dat"
+
     close(1)
     close(2)
     close(3)

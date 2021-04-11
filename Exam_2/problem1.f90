@@ -46,6 +46,12 @@ program bacteria_force_curve_fitting
     open(displacement, file="DisplacementData.dat")
     open(force, file="ForceData.dat")
 
+    ! prompt the user about what is happening in the program
+    write(*,*)
+    write(*,*) "Program to find where linear data is in given source"
+    write(*,*) "After finding linear data an equation for the data is found using a least squares fit"
+    write(*,*)
+
     ! There are 281 data points in the files
     ! loop can go 281 times to get all of the data points
     ! save the data points into an array
