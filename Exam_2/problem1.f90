@@ -32,6 +32,16 @@ program bacteria_force_curve_fitting
     real, dimension(:), allocatable :: displacementPoints
     real, dimension(:), allocatable :: forcePoints
 
+    ! values of the summations for the least squares fit
+    real :: displacementPointsSquared = 0
+    real :: displacementXforce = 0
+    real :: xValues = 0
+    real :: yValues = 0
+
+    ! values for the slope and the intercepts for the least squares fit
+    real :: lineSlope
+    real :: lineIntercept
+
     ! open the file containing the force curve data
     open(displacement, file="DisplacementData.dat")
     open(force, file="ForceData.dat")
@@ -129,5 +139,33 @@ program bacteria_force_curve_fitting
         write(*,*)
         
     enddo
+
+    ! run the linear least sqares fit on the data
+
+    ! find the xy, x^2, x, and y summed values
+    do i=1, count
+
+        displacementXforce = displacementXforce + (displacementPoints(i) * forcePoints(i))
+        displacementPointsSquared = displacementPointsSquared + (displacementPoints(i) ** 2)
+        xValues = xValues + displacementPoints(i)
+        yValues = yValues + forcePoints(i)
+
+    enddo
+
+    ! calculate the slope m
+    lineSlope = ((count * displacementXforce) - (xValues * yValues)) / ((count * displacementPointsSquared) - (xValues ** 2))
+    lineIntercept = (yValues - (lineSlope * xValues)) / (count)
+
+    write(*,*) "lineSlope is: ", lineSlope
+    write(*,*) "line intercept is:", lineIntercept
+
+    write(*,*)
+    write(*,*)
+    write(*,*) "The equation for the line is y =", lineSlope, "x + ", lineIntercept
+
+
+    ! deallocate the allocated arrays
+    deallocate(displacementPoints)
+    deallocate(forcePoints)
 
 end program bacteria_force_curve_fitting
