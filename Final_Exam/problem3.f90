@@ -12,7 +12,7 @@ program runge_kutta
     integer :: i
 
     ! variables for holding the k values needed for runge kutta
-    real :: k1, k2, k3, k4
+    real :: k1 = 0, k2 = 0, k3 = 0, k4 = 0
 
     ! variable to hold the y values for the estimations of the equation
     real :: y
@@ -20,11 +20,22 @@ program runge_kutta
     ! variable to hold the current x value for the equation
     real :: t
 
+    ! variables to hold the caluclations of the y value and x value
+    real :: y_value, x_value
+
     ! variable to hold the step (grid) size for the x values
     real :: h
 
+    ! value to hold pi
+    real :: pi = 4.0 * atan(1.0)
+
     ! variable to hold the number of steps to take for the runge kutta estimation
     integer :: steps
+
+    ! initial value for y and t and h
+    y = .5
+    t = 0
+    h = .25
 
     ! tell the user the purpose of the program
     write(*,*)
@@ -40,12 +51,117 @@ program runge_kutta
     read(*,*) steps
     write(*,*)
 
+    ! loop for calculating runge kutta with h = .25
     do i=1, steps
 
-        write(*,*) i
+        ! find the first k value using the runge ktta formula
+        k1 = h * (-y + sin(4 * pi * t))
+
+        ! find the second k value using the runge kutta formula
+        x_value = t + (.5 * h)
+        y_value = y + (.5 * k1)
+
+        ! plug the x and y values into the function to find the k2 value
+        k2 = h * ( -y_value + sin(4 * pi * x_value) )
+
+        ! find the third k value using the runge kutta formula
+        x_value = t + (.5 * h)
+        y_value = y + (.5 * k2)
+
+        ! plug the x and y value into the function to find the k3 value
+        k3 = h * ( -y_value + sin(4 * pi * x_value) )
+
+        ! find the fourth k value using the runge kutta formula
+        x_value = t + h
+        y_value = y + k3
+
+        k4 = h * (-y_value + sin(4 * pi * x_value))
+
+        y = y + ( (1.0/6.0) * (k1 + (2.0 * k2) + (2.0 * k3) + k4) )
+
+        t = t + h
+
+        ! print out all of the steps to the user
+        ! write(*,*)
+        ! write(*,*) "n: ", i
+        ! write(*,*)
+        ! write(*,*) "t: ", t
+        ! write(*,*)
+        ! write(*,*) "h: ", h
+        ! write(*,*) 
+        ! write(*,*) "k1: ", k1
+        ! write(*,*)
+        ! write(*,*) "k2: ", k2
+        ! write(*,*)
+        ! write(*,*) "k3: ", k3
+        ! write(*,*)
+        ! write(*,*) "k4: ", k4
+        ! write(*,*)
+        ! write(*,*) "y: ", y
 
     enddo
 
-    ! loop for calculating runge kutta
+    write(*,*) 
+    write(*,*) "the value of the differential equation with h = .25 and", steps, "steps is: ", y
+    write(*,*)
+
+    ! reset the values for the runge kutta
+    y = .5
+    t = 0
+    h = .125
+
+    ! loop for calculating runge kutta with h = .125
+    do i=1, steps
+
+        ! find the first k value using the runge ktta formula
+        k1 = h * (-y + sin(4 * pi * t))
+
+        ! find the second k value using the runge kutta formula
+        x_value = t + (.5 * h)
+        y_value = y + (.5 * k1)
+
+        ! plug the x and y values into the function to find the k2 value
+        k2 = h * ( -y_value + sin(4 * pi * x_value) )
+
+        ! find the third k value using the runge kutta formula
+        x_value = t + (.5 * h)
+        y_value = y + (.5 * k2)
+
+        ! plug the x and y value into the function to find the k3 value
+        k3 = h * ( -y_value + sin(4 * pi * x_value) )
+
+        ! find the fourth k value using the runge kutta formula
+        x_value = t + h
+        y_value = y + k3
+
+        k4 = h * (-y_value + sin(4 * pi * x_value))
+
+        y = y + ( (1.0/6.0) * (k1 + (2.0 * k2) + (2.0 * k3) + k4) )
+
+        t = t + h
+
+        ! print out all of the steps to the user
+        ! write(*,*)
+        ! write(*,*) "n: ", i
+        ! write(*,*)
+        ! write(*,*) "t: ", t
+        ! write(*,*)
+        ! write(*,*) "h: ", h
+        ! write(*,*) 
+        ! write(*,*) "k1: ", k1
+        ! write(*,*)
+        ! write(*,*) "k2: ", k2
+        ! write(*,*)
+        ! write(*,*) "k3: ", k3
+        ! write(*,*)
+        ! write(*,*) "k4: ", k4
+        ! write(*,*)
+        ! write(*,*) "y: ", y
+
+    enddo
+
+    write(*,*) 
+    write(*,*) "the value of the differential equation with h = .25 and", steps, "steps is: ", y
+    write(*,*)
 
 end program runge_kutta
