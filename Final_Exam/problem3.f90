@@ -161,7 +161,7 @@ program runge_kutta
     enddo
 
     write(*,*) 
-    write(*,*) "the value of the differential equation with h = .25 and", steps, "steps is: ", y
+    write(*,*) "the value of the differential equation with h = .125 and", steps, "steps is: ", y
     write(*,*)
 
 end program runge_kutta
