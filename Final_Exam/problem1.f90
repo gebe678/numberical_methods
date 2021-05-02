@@ -60,6 +60,30 @@ program exoplanet_transit_modeling
     real, dimension(3) :: planet_radius
     real :: m2_star_radius = .44
 
+    ! variable to hold the percentage decrease of star brighness during transit
+    real :: transit_brightness_drop
+
+    ! variable to hold the planet size from the user
+    integer :: planet_size
+
+    ! give the user information about the program
+    write(*,*) "Program to calculate the brightness drop from an m2 star using the transit method"
+    
+    ! get the size of the planet from the user
+    write(*,*)
+    write(*,*) "Please enter the size of the planet you would like to simulate"
+    write(*,*) "Enter 1 for a Mercury sized planet 2 for a Earth sized planet and 3 for a Jupiter sized planet"
+    read(*,*) planet_size
+    write(*,*)
+
+    do while(planet_size .ne. 1 .and. planet_size .ne. 2 .and. planet_size .ne. 3)
+        write(*,*) "Invalid planet choice"
+        write(*,*) "Enter 1 for a Mercury sized planet 2 for a Earth sized planet and 3 for a Jupiter sized planet"
+        read(*,*) planet_size
+        write(*,*)
+    enddo
+
+
     ! initialize the radai for the planets we are interested in
     ! 1 = mercury diameter
     ! 2 = earth diameter
@@ -112,7 +136,19 @@ program exoplanet_transit_modeling
             star_brightness = star_brightness - noise_level
 
         endif
+
+        ! decrease the star brightness if the exoplanet is passing in front of it
+        ! formula was found on https://www.sfu.ca/colloquium/PDC_Top/astrobiology/discovering-exoplanets/calculating-exoplanet-properties.html
+        ! drop in brighness is found by r^2 / R^2 where r = planet radius and R = star radius
+        transit_brightness_drop = (planet_radius(planet_size) ** 2) / (m2_star_radius ** 2)
         
+        ! change the star_brightness percentage if the planet is in front of the star from the viewers perspective
+        ! this happens if the star is below the line y = 0
+
+        if(y .le. 0) then
+            star_brightness = star_brightness - transit_brightness_drop
+        endif
+
         ! write the time (i) value and brightness (star_brightness) to their respective files
         write(3, *) i
         write(4, *) star_brightness
@@ -121,6 +157,15 @@ program exoplanet_transit_modeling
         star_brightness = 100
 
     enddo
+
+    write(*,*)
+    write(*,*) "The drop in star brightness percentage for this planet was", transit_brightness_drop
+    write(*,*)
+
+    write(*,*) "Time values saved in time_points.txt"
+    write(*,*) "Brighness values saved in brightness_percentage_points.txt"
+    write(*,*) "X coordinates of the planet saved in x_values.txt"
+    write(*,*) "Y coordinates of the planet saved in y_values.txt"
 
     ! close the output files
     close(1)
